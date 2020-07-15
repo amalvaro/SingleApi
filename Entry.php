@@ -4,4 +4,4 @@
     $routes = include "Routes.php";
 
     $api = new ApiSession($_POST, $routes);
-    $api->executeAndPrintRequest();
+    $api->executeAndPrintResponse();

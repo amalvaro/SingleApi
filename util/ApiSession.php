@@ -19,7 +19,7 @@
             $this->apiQueryParser = new ApiQueryParser($request);
         }
 
-        function executeAndPrintRequest() {
+        function executeAndPrintResponse() {
             $qp = $this->apiQueryParser;
             $this->printResponse(
                 $this->apiManager->findRouteAndExecute(
