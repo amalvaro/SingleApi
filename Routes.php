@@ -1,19 +1,16 @@
 <?php
 
-    include "controller/IdentificationController.php";
-
     return [
         "Config" => [
-            "ControllerDir" => "/controller"
+            "ControllerDir" => "./controller/"
         ],
         "Controllers" => [
-            "Identification" => [
+            "IdentificationController" => [
                 "Methods" => [
                     "Register" => [
                         "ExternalAccess" => true
                     ]
                 ],
-                "Controller" => IdentificationController::class
             ]
 
         ]

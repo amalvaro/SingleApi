@@ -1,7 +1,5 @@
 <?php
 
-    include "Route.php";
-
     class ApiManager
     {
 
@@ -15,6 +13,10 @@
         /* Controllers branch */
         private const BRANCH_CONTROLLER     = "Controllers";
 
+        /* Methods branch */
+        private const BRANCH_METHOD         = "Methods";
+        private const METHOD_EXTERNAL       = "ExternalAccess";
+
         /** @var array */
         private $apiConfiguration;
 
@@ -23,19 +25,33 @@
         }
 
         private function includeControllerClass($path, $name) {
-            include $path.$name.$this::PHP_FILE_EXTENSION;
+            require_once $path.$name.$this::PHP_FILE_EXTENSION;
+        }
+
+        public function getMethod($controllerName, $method) {
+            return $this->apiConfiguration[$this::BRANCH_CONTROLLER][$controllerName][$this::BRANCH_METHOD][$method];
+        }
+
+        public function getController($controllerName) {
+            return $this->apiConfiguration[$this::BRANCH_CONTROLLER][$controllerName];
+        }
+
+        public function canExternal($controllerName, $method) {
+            $method = $this->getMethod($controllerName, $method);
+            return isset($method[$this::METHOD_EXTERNAL]) ? $method[$this::METHOD_EXTERNAL] : false;
         }
 
         public function findRouteAndExecute($controller, $method, $args) {
 
-            $this->includeControllerClass(
-                $this->apiConfiguration[$this::BRANCH_CONFIG][$this::BRANCH_CONFIG_DIR],
-                $controller
-            );
+            if(isset($this->apiConfiguration[$this::BRANCH_CONTROLLER][$controller][$this::BRANCH_METHOD][$method])) {
+                $this->includeControllerClass(
+                    $this->apiConfiguration[$this::BRANCH_CONFIG][$this::BRANCH_CONFIG_DIR],
+                    $controller
+                );
+            }
 
             $controller = new $controller();
-            return $controller->$method($args);
-
+            return $controller->$method(...$args);
         }
 
     }

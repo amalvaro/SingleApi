@@ -1,12 +1,6 @@
 <?php
     class IdentificationController {
-
-        public function register($login, $password) {
-            return null;
+        public function Register($login, $password) {
+            return array("login" => $login, "password" => $password);
         }
-
-        public function auth($login, $password) {
-            return null;
-        }
-
     }
