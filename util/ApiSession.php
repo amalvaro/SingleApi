@@ -54,7 +54,6 @@
                     )
                 );
             }
-
         }
 
         public function setSessionValue($key, $value) {

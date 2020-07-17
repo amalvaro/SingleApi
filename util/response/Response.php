@@ -1,5 +1,5 @@
 <?php
     class Response
     {
-        public $ResponseCode;
+        public $ResponseCode; // and response text, etc.
     }

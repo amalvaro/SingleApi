@@ -14,7 +14,6 @@
     }
 
     class QueryStatic {
-        // QUERY REGION OFFSET
         public  const CONTROLLER_INDEX  = 1;
         public  const METHOD_INDEX      = 2;
         public  const ARGUMENTS_INDEX   = 3;
