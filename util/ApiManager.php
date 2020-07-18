@@ -49,12 +49,12 @@
 
         public function getMethodParams($controllerName, $method) {
             $method = $this->getMethod($controllerName, $method);
-            return $method[$this::METHOD_PARAMS];
+            return (isset($method[$this::METHOD_PARAMS]) ? $method[$this::METHOD_PARAMS] : array());
         }
 
         public function getMethodParamCount($controllerName, $method) {
             $method = $this->getMethod($controllerName, $method);
-            return $method[$this::PARAM_COUNT];
+            return (isset($method[$this::PARAM_COUNT]) ? $method[$this::PARAM_COUNT] : 0);
         }
 
         private function verifyParameters($controller, $method, $arguments) {
