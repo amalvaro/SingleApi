@@ -58,6 +58,8 @@
             catch (Exception $e) {
                 if(error_reporting() != 0)
                     print($e->getTraceAsString()." ".$e->getMessage());
+                else
+                    $this->printRequestError();
             }
         }
 
