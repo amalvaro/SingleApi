@@ -31,13 +31,13 @@
         {
             $responses = array();
 
-            if($this->ResponseCode != null)
+            if($this->ResponseCode !== null)
                 $responses["ResponseCode"] = $this->ResponseCode;
 
-            if($this->ResponseData != null)
+            if($this->ResponseData !== null)
                 $responses["ResponseData"] = $this->ResponseData;
 
-            if($this->ResponseMessage != null)
+            if($this->ResponseMessage !== null)
                 $responses["ResponseMessage"] = $this->ResponseMessage;
 
             return $responses;
@@ -53,11 +53,24 @@
     }
 
     class FailResponse extends Response {
-        public function __construct()
+
+        /** @var string */
+        private $FailDescription;
+
+        public function __construct($FailDescription = null)
         {
             parent::__construct(E_RESPONSE::FAIL);
+            $this->FailDescription = $FailDescription;
         }
+
+        public function jsonSerialize()
+        {
+            $responses = parent::jsonSerialize();
+            if($this->FailDescription !== null) {
+                $responses["FailDescription"] = $this->FailDescription;
+            }
+            return $responses;
+        }
+
     }
-
-
 

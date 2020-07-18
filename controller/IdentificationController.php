@@ -12,7 +12,9 @@
         }
 
         public function Register($i, $login, $password) {
-            return new SuccessResponse();
+            return new FailResponse("Bad login");
+            // return new FailResponse();
+            // return new SuccessResponse();
             // return new Response(E_RESPONSE::SUCCESS, "Data", "Message to client");
         }
     }
