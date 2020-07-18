@@ -12,6 +12,7 @@
         }
 
         public function Register($i, $login, $password) {
-            return new Response(E_RESPONSE::SUCCESS, "Data", "Message to client");
+            return new SuccessResponse();
+            // return new Response(E_RESPONSE::SUCCESS, "Data", "Message to client");
         }
     }
