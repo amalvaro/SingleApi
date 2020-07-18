@@ -5,6 +5,20 @@
         public const FAIL       = 0;
     }
 
+    class SuccessResponse extends Response {
+        public function __construct()
+        {
+            parent::__construct(E_RESPONSE::SUCCESS);
+        }
+    }
+
+    class FailResponse extends Response {
+        public function __construct()
+        {
+            parent::__construct(E_RESPONSE::FAIL);
+        }
+    }
+
     class Response implements JsonSerializable
     {
         /** @var int */
