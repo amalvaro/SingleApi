@@ -56,16 +56,25 @@
             }
         }
 
-        public function setSessionValue($key, $value) {
+        private function setSessionValue($key, $value) {
             $_SESSION[$key] = $value;
         }
 
-        public function getSessionValue($key, $default = false) {
+        private  function getSessionValue($key, $default = false) {
             return isset($_SESSION[$key]) ? $_SESSION[$key] : $default;
         }
 
+        private function printRequestError() {
+            header('HTTP/1.0 418 I\'m a teapot');
+        }
+
         private function printResponse($controllerResponse) {
-            print json_encode($controllerResponse);
+
+            if($controllerResponse != false)
+                print json_encode($controllerResponse);
+            else
+                $this->printRequestError();
+
         }
 
     }

@@ -13,7 +13,9 @@
         private const BRANCH_CONFIG_DIR     = "ControllerDir";
 
         /* Controllers branch */
-        private const BRANCH_CONTROLLER     = "Controllers";
+        private const BRANCH_CONTROLLER         = "Controllers";
+        private const CONTROLLER_DEPENDENCY     = "Dependency";
+        private const METHOD_DEPENDENCY         = "Dependency";
 
         /* Methods branch */
         private const BRANCH_METHOD         = "Methods";
@@ -59,9 +61,13 @@
             $methodParams = $this->getMethodParams($controller, $method);
             $paramsCount = $this->getMethodParamCount($controller, $method);
 
-            assert(count($arguments) == $paramsCount);
+            $success = ($paramsCount == count($arguments));
 
             for($i = 0; $i < count($arguments); $i++) {
+
+                if(!$success)
+                    break;
+
                 $arg = $arguments[$i];
                 if(isset($methodParams[$i])) {
                     $keys = array_keys($methodParams[$i]);
@@ -69,38 +75,78 @@
                         $condition = $methodParams[$i][$key];
                         switch ($key) {
                             case "Type": {
-                                if($condition == "number")
-                                    assert(is_numeric($arg));
+                                $success &= (($condition == "number") ? ((is_numeric($arg)) ? true : false) : true);
                                 break;
                             }
                             case "Expression": {
-                                assert(preg_match($condition, $arg) == 1);
+                                /* assert(preg_match($condition, $arg) == 1); */
+                                $success &= (preg_match($condition, $arg) == 1);
                                 break;
                             }
                             case "MinLength": {
-                                assert(mb_strlen($arg, "UTF-8") >= $condition);
+                                /* assert(mb_strlen($arg, "UTF-8") >= $condition); */
+                                $success &= (mb_strlen($arg, "UTF-8") >= $condition);
                                 break;
                             }
                             case "MaxLength": {
-                                assert(mb_strlen($arg, "UTF-8") <= $condition);
+                                /* assert(mb_strlen($arg, "UTF-8") <= $condition); */
+                                $success &= (mb_strlen($arg, "UTF-8") <= $condition);
                                 break;
                             }
                             case "Min": {
-                                assert(intval($arg) >= $condition);
+                                /* assert(intval($arg) >= $condition); */
+                                $success &= (intval($arg) >= $condition);
                                 break;
                             }
                             case "Max": {
-                                assert(intval($arg) <= $condition);
+                                /* assert(intval($arg) <= $condition); */
+                                $success &= (intval($arg) <= $condition);
                                 break;
                             }
                             case "Action": {
-                                assert($condition());
+                                $success &= $condition();
                                 break;
                             }
                         }
                     }
                 }
             }
+
+            return $success;
+
+        }
+
+        private function getControllerDependency($controller) {
+            $controller = $this->getController($controller);
+
+            $instances = array();
+
+            if(isset($controller[$this::CONTROLLER_DEPENDENCY]))
+                $instances = $this->releaseDependencies($controller[$this::CONTROLLER_DEPENDENCY]);
+
+            return $instances;
+        }
+
+        private function getMethodDependency($controller, $method) {
+            $methodConf = $this->getMethod($controller, $method);
+
+            $instances = array();
+
+            if(isset($methodConf[$this::METHOD_DEPENDENCY]))
+                $instances = $this->releaseDependencies($methodConf[$this::METHOD_DEPENDENCY]);
+
+            return $instances;
+        }
+
+        private function releaseDependencies($dependencies) {
+            $instances = array();
+            if(isset($dependencies)) {
+                $keys = array_keys($dependencies);
+                foreach ($keys as $key) {
+                    array_push($instances, $dependencies[$key]());
+                }
+            }
+            return $instances;
         }
 
         public function findRouteAndExecute($controller, $method, $args) {
@@ -112,10 +158,12 @@
                 );
             }
 
-            $this->verifyParameters($controller, $method, $args);
+            if($this->verifyParameters($controller, $method, $args)) {
+                $controllerInst = new $controller(...$this->getControllerDependency($controller));
+                return $controllerInst->$method(...$this->getMethodDependency($controller, $method), ...$args);
+            }
 
-            $controller = new $controller();
-            return $controller->$method(...$args);
+            return false;
 
         }
 

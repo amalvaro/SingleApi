@@ -1,6 +1,14 @@
 <?php
     class IdentificationController {
-        public function Register($login, $password) {
-            return array("login" => $login, "password" => $password);
+
+        private $e;
+
+        public function __construct($i)
+        {
+            $this->e = $i;
+        }
+
+        public function Register($i, $login, $password) {
+            return array("dependency1" => $i, "dependency2" => $this->e, "login" => $login, "password" => $password);
         }
     }
