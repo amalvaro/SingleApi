@@ -34,28 +34,62 @@
             require_once $path.$name.$this::PHP_FILE_EXTENSION;
         }
 
+        /**
+         * @throws Exception
+         */
+
         public function getMethod($controllerName, $method) {
-            return $this->apiConfiguration[$this::BRANCH_CONTROLLER][$controllerName][$this::BRANCH_METHOD][$method];
+
+            $controller = $this->getController($controllerName);
+
+            if(!isset($controller[$this::BRANCH_METHOD][$method]))
+                throw new Exception("The method is not found");
+
+            return $controller[$this::BRANCH_METHOD][$method];
         }
 
+
+        /**
+         * @throws Exception
+         */
+
         public function getController($controllerName) {
+
+            if(!isset($this->apiConfiguration[$this::BRANCH_CONTROLLER][$controllerName]))
+                throw new Exception("The controller is not found");
+
             return $this->apiConfiguration[$this::BRANCH_CONTROLLER][$controllerName];
         }
+
+        /**
+         * @throws Exception
+         */
 
         public function canExternal($controllerName, $method) {
             $method = $this->getMethod($controllerName, $method);
             return isset($method[$this::METHOD_EXTERNAL]) ? $method[$this::METHOD_EXTERNAL] : false;
         }
 
+        /**
+         * @throws Exception
+         */
+
         public function getMethodParams($controllerName, $method) {
             $method = $this->getMethod($controllerName, $method);
             return (isset($method[$this::METHOD_PARAMS]) ? $method[$this::METHOD_PARAMS] : array());
         }
 
+        /**
+         * @throws Exception
+         */
         public function getMethodParamCount($controllerName, $method) {
             $method = $this->getMethod($controllerName, $method);
             return (isset($method[$this::PARAM_COUNT]) ? $method[$this::PARAM_COUNT] : 0);
         }
+
+        /**
+         * @throws Exception
+         */
 
         private function verifyParameters($controller, $method, $arguments) {
             $methodParams = $this->getMethodParams($controller, $method);
@@ -116,6 +150,10 @@
 
         }
 
+        /**
+         * @throws Exception
+         */
+
         private function getControllerDependency($controller) {
             $controller = $this->getController($controller);
 
@@ -126,6 +164,10 @@
 
             return $instances;
         }
+
+        /**
+         * @throws Exception
+         */
 
         private function getMethodDependency($controller, $method) {
             $methodConf = $this->getMethod($controller, $method);
@@ -149,6 +191,10 @@
             return $instances;
         }
 
+        /**
+         * @throws Exception
+         */
+
         public function findRouteAndExecute($controller, $method, $args) {
 
             if(isset($this->apiConfiguration[$this::BRANCH_CONTROLLER][$controller][$this::BRANCH_METHOD][$method])) {
@@ -158,7 +204,7 @@
                 );
             }
 
-            if($this->verifyParameters($controller, $method, $args)) {
+            if ($this->verifyParameters($controller, $method, $args)) {
                 $controllerInst = new $controller(...$this->getControllerDependency($controller));
                 return $controllerInst->$method(...$this->getMethodDependency($controller, $method), ...$args);
             }

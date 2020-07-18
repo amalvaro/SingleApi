@@ -44,15 +44,20 @@
             $methodName = $qp->getMethodName();
             $methodArguments = $qp->getArgs();
 
-            $methodExternalAccess = $this->apiManager->canExternal($controllerName, $methodName);
-
-            if((!$methodExternalAccess  && $this->getSessionValue(SessionKeys::SESSION_AUTH_KEY)) == AuthState::AUTHORIZED
-                || $methodExternalAccess) {
-                $this->printResponse(
-                    $this->apiManager->findRouteAndExecute(
-                        $controllerName, $methodName, $methodArguments
-                    )
-                );
+            try {
+                $methodExternalAccess = $this->apiManager->canExternal($controllerName, $methodName);
+                if ((!$methodExternalAccess && $this->getSessionValue(SessionKeys::SESSION_AUTH_KEY)) == AuthState::AUTHORIZED
+                    || $methodExternalAccess) {
+                    $this->printResponse(
+                        $this->apiManager->findRouteAndExecute(
+                            $controllerName, $methodName, $methodArguments
+                        )
+                    );
+                }
+            }
+            catch (Exception $e) {
+                if(error_reporting() != 0)
+                    print($e->getTraceAsString()." ".$e->getMessage());
             }
         }
 
