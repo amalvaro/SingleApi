@@ -1,4 +1,7 @@
 <?php
+
+    include_once "util/response/Response.php";
+
     class IdentificationController {
 
         private $e;
@@ -9,6 +12,6 @@
         }
 
         public function Register($i, $login, $password) {
-            return array("dependency1" => $i, "dependency2" => $this->e, "login" => $login, "password" => $password);
+            return new Response(E_RESPONSE::SUCCESS, "Data", "Message to client");
         }
     }
